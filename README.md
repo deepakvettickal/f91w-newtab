@@ -5,16 +5,16 @@
 </p>
 
 <p align="center">
-  <img src="assets/clock.png" alt="Default F-91W clock face" width="100%"/>
+  <img src="assets/default.png" alt="Default F-91W clock face" width="100%"/>
 </p>
 
 <p align="center">
-  <img src="assets/digits.png" alt="Magenta digits" width="49%"/>
-  <img src="assets/backlight.png" alt="Blue backlight" width="49%"/>
+  <img src="assets/magenta.png" alt="Magenta digits" width="49%"/>
+  <img src="assets/blue.png" alt="Blue backlight" width="49%"/>
 </p>
 <p align="center">
-  <img src="assets/gradient.png" alt="Pink to green gradient backlight" width="49%"/>
-  <img src="assets/borderless.png" alt="Borderless full-page LCD" width="49%"/>
+  <img src="assets/pinkgreen.png" alt="Pink to green gradient backlight" width="49%"/>
+  <img src="assets/grey.png" alt="Borderless full-page LCD" width="49%"/>
 </p>
 
 ## Features
