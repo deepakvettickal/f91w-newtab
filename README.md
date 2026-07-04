@@ -13,7 +13,7 @@
   <img src="assets/blue.png" alt="Blue backlight" width="49%"/>
 </p>
 <p align="center">
-  <img src="assets/mono.png" alt="Clean monochrome mode" width="49%"/>
+  <img src="assets/green.png" alt="Green digits, clean mode" width="49%"/>
   <img src="assets/grey.png" alt="Borderless full-page LCD" width="49%"/>
 </p>
 
