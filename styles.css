@@ -355,3 +355,11 @@ html.ready .lcd { opacity: 1; }
 .edit-x:hover, .edit-reset:hover { background: rgba(255, 255, 255, 0.14); }
 .edit-x { font-size: 0.95em; width: 2.2em; height: 2.2em; }
 .edit-reset { font-size: 0.7em; letter-spacing: 0.1em; padding: 0.45em 0.6em; }
+.edit-reset.on { background: rgba(255, 255, 255, 0.85); color: #111; border-color: #fff; }
+
+/* clean mode: hide the branding/labels, keep everything else in place
+   (visibility, not display, so nothing reflows) */
+.lcd-inner.clean .brand,
+.lcd-inner.clean .model,
+.lcd-inner.clean .chrono,
+.lcd-inner.clean .foot .lbl { visibility: hidden; }

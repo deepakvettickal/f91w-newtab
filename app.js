@@ -32,7 +32,7 @@ const el = {
 // Persistent settings. Extensions use chrome.storage.local (localStorage is
 // unreliable on new-tab pages); fall back to localStorage for the file:// preview.
 // A synchronous cache is filled once by loadStore() before first render.
-const STORE_KEYS = ["f91_top", "f91_bottom", "f91_ink", "f91_border", "f91_bright", "f91_24h", "f91_tip", "f91_lit"];
+const STORE_KEYS = ["f91_top", "f91_bottom", "f91_ink", "f91_border", "f91_bright", "f91_24h", "f91_tip", "f91_lit", "f91_clean"];
 const hasChromeStore = typeof chrome !== "undefined" && chrome.storage && chrome.storage.local;
 let storeCache = {};
 const lsGet = (k) => (k in storeCache ? storeCache[k] : null);
@@ -301,6 +301,13 @@ $("#wrBox").addEventListener("click", () => el.lcd.classList.add("editing"));
 $("#editX").addEventListener("click", () => el.lcd.classList.remove("editing"));
 $("#editReset").addEventListener("click", resetTheme);
 
+const cleanBtn = $("#cleanBtn");
+cleanBtn.addEventListener("click", () => {
+  const on = el.lcd.classList.toggle("clean");
+  cleanBtn.classList.toggle("on", on);
+  lsSet("f91_clean", on ? "1" : "0");
+});
+
 const brightSlider = $("#bright");
 brightSlider.addEventListener("input", () => {
   brightness = parseInt(brightSlider.value, 10);
@@ -328,6 +335,7 @@ async function init() {
   brightness = parseInt(lsGet("f91_bright") || "70", 10);
   brightSlider.value = brightness;
   if (lsGet("f91_lit") === "1") el.lcd.classList.add("lit");
+  if (lsGet("f91_clean") === "1") { el.lcd.classList.add("clean"); cleanBtn.classList.add("on"); }
 
   buildSwatches();
   applyTheme();
