@@ -1,0 +1,272 @@
+/* ===== Casio F-91W replica — black background, off-white DSEG digits ===== */
+
+@font-face {
+  font-family: "DSEG7";
+  src: url("fonts/DSEG7Classic-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "DSEG14";
+  src: url("fonts/DSEG14Classic-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  --ink: #e8e7e2;                       /* off-white lit segments (digit color) */
+  --ink-dim: #b9b8b3;                   /* secondary text */
+  --ghost: rgba(232, 231, 226, 0.09);   /* unlit segment ghosts (tinted from --ink) */
+  --accent: #4f8bd0;                    /* F-91 blue accent */
+  --amber: #c9a86a;
+  --red: #9a4a37;
+  --bg: #000;
+  --grad-top: #000;                     /* LCD gradient — top (themeable) */
+  --grad-bottom: #000;                  /* LCD gradient — bottom (themeable) */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Menlo", "Consolas", monospace;
+  user-select: none;
+  overflow: hidden;
+}
+
+.lcd {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4vmin;
+  background: radial-gradient(120% 90% at 50% 40%, #0b0b0b, #000 75%);
+}
+
+/* The whole watch face scales from ONE font-size on .lcd-inner.
+   Everything below is in em, so it stays proportional at any size.
+   Width is tied to the digit size so digits never overflow the border. */
+.lcd-inner {
+  --face: clamp(56px, min(18vw, 26vh), 340px);   /* master size = big time height */
+  font-size: var(--face);
+  width: calc(var(--face) * 4.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.08em;
+}
+
+/* ---- CASIO / F-91W header ---- */
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  width: 88%;
+}
+.brand {
+  font-size: 0.2em;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+.model {
+  font-size: 0.13em;
+  font-style: italic;
+  font-weight: bold;
+  letter-spacing: 0.04em;
+  color: var(--amber);
+  transform: scaleY(0.85);
+}
+
+/* ---- label rows (LIGHT / CHRONOGRAPH / MODE / ALARM) ---- */
+.labelrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 92%;
+}
+.labelrow.top { border-bottom: 0.012em solid var(--accent); padding-bottom: 0.02em; }
+.labelrow.bottom { border-top: 0.012em solid var(--accent); padding-top: 0.02em; }
+
+.lbl {
+  font-size: 0.058em;
+  letter-spacing: 0.12em;
+  color: var(--ink-dim);
+  font-family: inherit;
+  white-space: nowrap;
+}
+.lbl.action { cursor: pointer; transition: color 0.12s; }
+.lbl.action:hover { color: var(--ink); }
+.chrono { color: var(--amber); }
+.arw { color: var(--red); display: inline-block; transform: scaleX(1.6); }
+
+/* ---- the LCD screen ---- */
+.screen {
+  width: 100%;
+  background: var(--bg);
+  border-radius: 0.08em;
+  padding: 0.16em 0.18em 0.13em;
+  margin: 0.04em 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  border: 0.02em solid var(--accent);
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* top row: 3 FIXED thirds — [ mode | weekday | date ].
+   Because each field owns its own 1fr track, changing one (e.g. 24H->AM)
+   can never push the others — exactly like a real segmented LCD. */
+.screen-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: end;
+  width: 86%;
+  line-height: 1;
+  transform: translateY(-0.06em);
+  margin-bottom: 0.1em;
+}
+.timemode {
+  grid-column: 1;
+  justify-self: start;
+  font-size: 0.09em;
+  letter-spacing: 0.05em;
+  color: var(--ink-dim);
+  padding-bottom: 0.15em;
+}
+.weekday { grid-column: 2; justify-self: center; }
+.daynum  { grid-column: 3; justify-self: end; }
+
+/* main row: HH:MM big, seconds small (F-91 style) */
+.screen-main {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.06em;
+  line-height: 0.9;
+}
+
+.dseg7 { font-family: "DSEG7", monospace; }
+.dseg14 { font-family: "DSEG14", monospace; }
+
+/* --- big HH:MM: static ghost behind, lit digit-groups on top --- */
+.hm { font-size: 1em; position: relative; color: var(--ink); }
+.hm[data-ghost]::before {
+  content: attr(data-ghost);
+  position: absolute; inset: 0;
+  color: var(--ghost); z-index: 0; pointer-events: none;
+}
+.hm > span { position: relative; z-index: 1; }
+
+/* --- reusable fixed cell: ghost defines the slot; lit value overlays it --- */
+.cell { position: relative; display: inline-block; }
+.cell .ghost { color: var(--ghost); }                 /* in flow -> fixes cell width */
+.cell .win {
+  position: absolute; inset: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+.cell.right .win { justify-content: flex-end; }
+.cell .val { color: var(--ink); white-space: nowrap; }
+
+.seconds { font-size: 0.42em; padding-bottom: 0.06em; }
+.weekday { font-size: 0.42em; }
+.daynum  { font-size: 0.42em; }
+
+/* ---- footer WATER (WR) RESIST ---- */
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.14em;
+  width: 84%;
+}
+.foot .lbl { color: var(--ink-dim); }
+.wr-box {
+  font-size: 0.07em;
+  letter-spacing: -0.1em;
+  border: 0.14em solid var(--accent);
+  padding: 0 0.7em 0 0.5em;
+  border-radius: 0.3em 0.3em 1.2em 1.2em / 0.3em 0.3em 2em 2em;
+  color: var(--red);
+}
+.wr-box > span { display: inline-block; }
+.wr-box .r { font-style: italic; }
+
+/* selected field while editing the timer (blinks like a real watch) */
+.sel { animation: seg-blink 0.9s steps(1, end) infinite; }
+@keyframes seg-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0.25; } }
+
+/* ---- contextual hint line (stopwatch / timer) ---- */
+.hint {
+  font-size: 0.058em;
+  letter-spacing: 0.12em;
+  color: var(--ink-dim);
+  min-height: 1.4em;
+  margin-top: 0.5em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ---- backlight (LIGHT): themed gradient fill + circular outer glow ---- */
+.lcd-inner.lit .screen {
+  background: linear-gradient(180deg, var(--grad-top), var(--grad-bottom));
+  box-shadow: 0 0 0.7em 0.08em var(--glow);
+}
+
+/* ---- WR style panel (neon theme picker) ---- */
+.wr-box { cursor: pointer; }
+.style-panel {
+  position: fixed;
+  left: 50%;
+  bottom: 4vh;
+  transform: translateX(-50%);
+  z-index: 20;
+  background: rgba(10, 10, 12, 0.96);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: "Menlo", monospace;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+}
+.style-panel[hidden] { display: none; }
+.sp-row { display: flex; align-items: center; gap: 12px; }
+.sp-label {
+  width: 68px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--ink-dim);
+}
+.swatches { display: flex; gap: 7px; flex-wrap: wrap; }
+.sw {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.1s;
+}
+.sw:hover { transform: scale(1.15); }
+.sw.on { border-color: #fff; box-shadow: 0 0 8px currentColor; }
+.sw.def { background: transparent; }   /* empty = default */
+.sp-close {
+  align-self: flex-end;
+  margin-top: 2px;
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--accent);
+  border-radius: 5px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+.sp-close:hover { background: rgba(79, 139, 208, 0.18); }

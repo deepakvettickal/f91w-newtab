@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>F-91W</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="lcd">
+    <div class="lcd-inner" id="lcd">
+
+      <!-- CASIO / F-91W header -->
+      <div class="head">
+        <span class="brand">CASIO</span>
+        <span class="model">F-91W</span>
+      </div>
+
+      <!-- upper label row -->
+      <div class="labelrow top">
+        <span class="lbl action" id="lightBtn"><span class="arw">&#9664;</span> LIGHT/RESET</span>
+        <span class="lbl chrono">ALARM CHRONOGRAPH</span>
+      </div>
+
+      <!-- the LCD screen — every cell is a FIXED position; only lit values change -->
+      <div class="screen" id="screen">
+        <div class="screen-top">
+          <span class="timemode" id="timemode">24H</span>
+          <span class="cell weekday dseg14" id="weekdayCell">
+            <span class="ghost">~~</span>
+            <span class="win"><span class="val" id="weekday">SA</span></span>
+          </span>
+          <span class="cell daynum dseg7 right">
+            <span class="ghost">88</span>
+            <span class="win"><span class="val" id="daynum">4</span></span>
+          </span>
+        </div>
+        <div class="screen-main">
+          <span class="hm dseg7" data-ghost="88:88"><span class="g" id="g1">16</span><span class="sep">:</span><span class="g" id="g2">59</span></span>
+          <span class="cell seconds dseg7 right">
+            <span class="ghost">88</span>
+            <span class="win"><span class="val" id="seconds">13</span></span>
+          </span>
+        </div>
+      </div>
+
+      <!-- lower label row -->
+      <div class="labelrow bottom">
+        <span class="lbl action" id="modeBtn"><span class="arw">&#9664;</span> MODE</span>
+        <span class="lbl action" id="altBtn">START-STOP/24HR <span class="arw">&#9654;</span></span>
+      </div>
+
+      <!-- footer -->
+      <div class="foot">
+        <span class="lbl">WATER</span>
+        <span class="wr-box" id="wrBox" title="Theme"><span>W<span class="r">R</span></span></span>
+        <span class="lbl">RESIST</span>
+      </div>
+
+      <!-- contextual hint (stopwatch / timer editing) -->
+      <div class="hint" id="hint"></div>
+
+    </div>
+  </main>
+
+  <!-- neon theme picker (opened by the WR badge) -->
+  <div class="style-panel" id="stylePanel" hidden>
+    <div class="sp-row"><span class="sp-label">TOP</span><div class="swatches" data-target="top"></div></div>
+    <div class="sp-row"><span class="sp-label">BOTTOM</span><div class="swatches" data-target="bottom"></div></div>
+    <div class="sp-row"><span class="sp-label">DIGITS</span><div class="swatches" data-target="ink"></div></div>
+    <button class="sp-close" id="spClose">CLOSE</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
