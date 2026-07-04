@@ -283,6 +283,15 @@ $("#wrBox").addEventListener("click", () => el.lcd.classList.add("editing"));
 $("#editX").addEventListener("click", () => el.lcd.classList.remove("editing"));
 $("#editReset").addEventListener("click", resetTheme);
 
+// one-time tip pointing at the WR colour editor
+if (!lsGet("f91_tip")) {
+  const tip = $("#wrTip");
+  const dismissTip = () => { tip.classList.remove("show"); lsSet("f91_tip", "1"); };
+  tip.classList.add("show");
+  setTimeout(dismissTip, 6000);
+  $("#wrBox").addEventListener("click", dismissTip, { once: true });
+}
+
 const brightSlider = $("#bright");
 brightSlider.value = brightness;
 brightSlider.addEventListener("input", () => {

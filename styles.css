@@ -213,6 +213,24 @@ html, body {
   white-space: nowrap;
 }
 
+/* ---- one-time WR tip ---- */
+.wr-tip {
+  position: fixed;
+  left: 50%;
+  bottom: 3.5vh;
+  transform: translateX(-50%);
+  font-family: "Menlo", monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--ink-dim);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.wr-tip.show { opacity: 0.75; }
+.wr-tip b { color: var(--ink); }
+
 /* ---- backlight (LIGHT): themed gradient fill + circular outer glow.
        --lite (0.1–1) is the brightness slider. ---- */
 .lcd-inner.lit .screen {
