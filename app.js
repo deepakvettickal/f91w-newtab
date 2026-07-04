@@ -215,6 +215,10 @@ function applyTheme() {
   r.setProperty("--accent", theme.border);
   r.setProperty("--lite", (brightness / 100).toFixed(2));
   r.setProperty("--glow", glowColor());
+  // per-edge glow colors so the no-border halo matches the fill at each edge
+  r.setProperty("--glow-top", hexToRgba(theme.top, 0.85));
+  r.setProperty("--glow-bottom", hexToRgba(theme.bottom, 0.85));
+  el.lcd.classList.toggle("borderless", theme.border === "transparent");
 }
 
 function markSelected(box, target) {
