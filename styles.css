@@ -44,7 +44,9 @@ html, body {
   justify-content: center;
   padding: 4vmin;
   background: radial-gradient(120% 90% at 50% 40%, #0b0b0b, #000 75%);
-  transition: background 0.25s ease, filter 0.25s ease;
+  /* hidden until saved settings are applied, to avoid a default-state flash */
+  opacity: 0;
+  transition: background 0.25s ease, filter 0.25s ease, opacity 0.1s ease;
 }
 
 /* The whole watch face scales from ONE font-size on .lcd-inner.
@@ -230,6 +232,9 @@ html, body {
 }
 .wr-tip.show { opacity: 0.75; }
 .wr-tip b { color: var(--ink); }
+
+/* reveal the face once settings are applied (see init() in app.js) */
+html.ready .lcd { opacity: 1; }
 
 /* ---- backlight (LIGHT): themed gradient fill + circular outer glow.
        --lite (0.1–1) is the brightness slider. ---- */

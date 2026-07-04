@@ -334,6 +334,10 @@ async function init() {
   showTipOnce();
   updateUI();
   tick();
+  // saved state is applied and painted — reveal without the default-state flash
+  document.documentElement.classList.add("ready");
   setInterval(tick, 50);
 }
 init();
+// safety: never leave the face hidden if init() is delayed or errors
+setTimeout(() => document.documentElement.classList.add("ready"), 500);
