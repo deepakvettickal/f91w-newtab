@@ -222,12 +222,21 @@ html, body {
   box-shadow: 0 0 calc(1em * var(--lite, 0.7)) calc(0.114em * var(--lite, 0.7)) var(--glow);
 }
 
-/* no-border mode: two edge-matched halos (top color up, bottom color down) so
-   the light spreads outward continuously, with no seam at the fill edge. */
-.lcd-inner.borderless.lit .screen {
-  box-shadow:
-    0 calc(-0.5em * var(--lite, 0.7)) calc(1.4em * var(--lite, 0.7)) calc(0.3em * var(--lite, 0.7)) var(--glow-top),
-    0 calc(0.5em * var(--lite, 0.7)) calc(1.4em * var(--lite, 0.7)) calc(0.3em * var(--lite, 0.7)) var(--glow-bottom);
+/* no-border mode: the glow is a blurred, enlarged copy of the SAME gradient
+   sitting behind the screen, so the light spreads outward continuously and
+   each edge keeps its own color (dark top stays dark, bright bottom stays
+   bright) — no seam, no wrap-around. */
+.lcd-inner.borderless.lit .screen { box-shadow: none; }
+.lcd-inner.borderless.lit .screen::before {
+  content: "";
+  position: absolute;
+  inset: calc(-1em * var(--lite, 0.7));
+  z-index: -1;
+  background: linear-gradient(180deg, var(--grad-top), var(--grad-bottom));
+  filter: blur(calc(0.8em * var(--lite, 0.7)));
+  border-radius: 22%;
+  opacity: calc(0.4 + 0.5 * var(--lite, 0.7));
+  pointer-events: none;
 }
 
 /* ---- inline colour-edit mode ---- */
