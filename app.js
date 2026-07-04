@@ -188,11 +188,22 @@ const theme = {
 };
 let brightness = parseInt(lsGet("f91_bright") || "70", 10);
 
-function hexToRgba(hex, a) {
+function toRgb(hex) {
   let h = hex.replace("#", "");
   if (h.length === 3) h = h.split("").map((c) => c + c).join("");
-  const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${a})`;
+  return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+}
+function hexToRgba(hex, a) { const [r, g, b] = toRgb(hex); return `rgba(${r}, ${g}, ${b}, ${a})`; }
+const luma = ([r, g, b]) => 0.299 * r + 0.587 * g + 0.114 * b;
+
+// the outer glow reflects the LIGHT gradient — blend of its *bright* colors
+// (a near-black end, e.g. the default bottom, is ignored so it doesn't dim it)
+function glowColor() {
+  const cols = [theme.top, theme.bottom].map(toRgb).filter((c) => luma(c) > 40);
+  if (!cols.length) return "rgba(232, 231, 226, 0.4)";   // both dark -> original soft glow
+  const avg = cols.reduce((a, c) => [a[0] + c[0], a[1] + c[1], a[2] + c[2]], [0, 0, 0])
+                  .map((v) => Math.round(v / cols.length));
+  return `rgba(${avg[0]}, ${avg[1]}, ${avg[2]}, 0.7)`;
 }
 
 function applyTheme() {
@@ -203,9 +214,7 @@ function applyTheme() {
   r.setProperty("--ghost", hexToRgba(theme.ink, 0.1));
   r.setProperty("--accent", theme.border);
   r.setProperty("--lite", (brightness / 100).toFixed(2));
-  // glow follows the top color; default keeps the original soft off-white glow
-  const topDefault = theme.top.toLowerCase() === THEME_DEFAULTS.top.toLowerCase();
-  r.setProperty("--glow", topDefault ? "rgba(232, 231, 226, 0.4)" : hexToRgba(theme.top, 0.6));
+  r.setProperty("--glow", glowColor());
 }
 
 function markSelected(box, target) {
