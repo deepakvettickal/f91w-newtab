@@ -32,7 +32,7 @@ const el = {
 // Persistent settings. Extensions use chrome.storage.local (localStorage is
 // unreliable on new-tab pages); fall back to localStorage for the file:// preview.
 // A synchronous cache is filled once by loadStore() before first render.
-const STORE_KEYS = ["f91_top", "f91_bottom", "f91_ink", "f91_border", "f91_bright", "f91_24h", "f91_tip", "f91_lit", "f91_clean"];
+const STORE_KEYS = ["f91_top", "f91_bottom", "f91_ink", "f91_border", "f91_bright", "f91_24h", "f91_tip", "f91_lit", "f91_clean", "f91_mode", "f91_tmr", "f91_sw"];
 const hasChromeStore = typeof chrome !== "undefined" && chrome.storage && chrome.storage.local;
 let storeCache = {};
 const lsGet = (k) => (k in storeCache ? storeCache[k] : null);
@@ -94,7 +94,7 @@ function tick() {
 
   } else { // TIMER — days D | HH:MM | SS
     let r = timer.running ? Math.max(0, timer.endsAt - now) : timer.remaining;
-    if (timer.running && r <= 0) { timer.running = false; timer.remaining = 0; r = 0; updateUI(); }
+    if (timer.running && r <= 0) { timer.running = false; timer.remaining = 0; r = 0; saveTimer(); updateUI(); }
     el.timemode.textContent = timer.running ? "RUN" : "TR";
     el.daynum.textContent = "";
     const total = Math.ceil(r / 1000);  // round up until it truly hits 0
@@ -118,6 +118,13 @@ function updateUI() {
   el.hint.textContent = editing ? "◄ ► FIELD    ▲ ▼ SET" : "";
 }
 
+/* ---- persist mode + stopwatch/timer state so they survive across new tabs.
+   Timestamps are absolute (Date.now-based), so a running timer/stopwatch keeps
+   counting in real time no matter which tab reads it. ---- */
+function saveMode() { lsSet("f91_mode", mode); }
+function saveTimer() { lsSet("f91_tmr", JSON.stringify(timer)); }
+function saveSw() { lsSet("f91_sw", JSON.stringify(sw)); }
+
 /* ---- actions ---- */
 function toggleFormat() {
   use24 = !use24;
@@ -129,6 +136,7 @@ function startStop() {
   if (mode === "SW") {
     if (sw.running) { sw.elapsed += now - sw.startedAt; sw.running = false; }
     else { sw.startedAt = now; sw.running = true; }
+    saveSw();
   } else if (mode === "TIMER") {
     if (timer.running) { timer.remaining = Math.max(0, timer.endsAt - now); timer.running = false; }
     else {
@@ -136,12 +144,13 @@ function startStop() {
       if (timer.remaining <= 0) return;           // nothing set -> ignore
       timer.endsAt = now + timer.remaining; timer.running = true;
     }
+    saveTimer();
   }
 }
 
 function resetCurrent() {
-  if (mode === "SW") { sw.running = false; sw.elapsed = 0; sw.startedAt = 0; }
-  else if (mode === "TIMER") { timer.running = false; timer.setMs = 0; timer.remaining = 0; }
+  if (mode === "SW") { sw.running = false; sw.elapsed = 0; sw.startedAt = 0; saveSw(); }
+  else if (mode === "TIMER") { timer.running = false; timer.setMs = 0; timer.remaining = 0; saveTimer(); }
 }
 
 function adjust(delta) {
@@ -157,6 +166,7 @@ function adjust(delta) {
   else s = (s + delta + 60) % 60;                  // seconds 0-59
   timer.setMs = (((d * 24 + h) * 60 + m) * 60 + s) * 1000;
   timer.remaining = timer.setMs;
+  saveTimer();
 }
 
 /* ---- button wiring ---- */
@@ -171,6 +181,7 @@ el.lightBtn.addEventListener("click", () => {
 });
 el.modeBtn.addEventListener("click", () => {
   mode = MODES[(MODES.indexOf(mode) + 1) % MODES.length];
+  saveMode();
   updateUI(); tick();
 });
 el.altBtn.addEventListener("click", () => {
@@ -337,6 +348,9 @@ async function init() {
   if (lsGet("f91_lit") === "1") el.lcd.classList.add("lit");
   if (lsGet("f91_clean") === "1") { el.lcd.classList.add("clean"); cleanBtn.classList.add("on"); }
 
+  // restore mode + stopwatch/timer state (so a new tab resumes where you were)
+  restoreState();
+
   buildSwatches();
   applyTheme();
   showTipOnce();
@@ -345,7 +359,28 @@ async function init() {
   // saved state is applied and painted — reveal without the default-state flash
   document.documentElement.classList.add("ready");
   setInterval(tick, 50);
+
+  // keep already-open tabs in sync when mode/timer/stopwatch change elsewhere
+  if (hasChromeStore) {
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area !== "local") return;
+      let touched = false;
+      for (const k of ["f91_mode", "f91_tmr", "f91_sw"]) {
+        if (changes[k]) { storeCache[k] = changes[k].newValue; touched = true; }
+      }
+      if (touched) { restoreState(); updateUI(); tick(); }
+    });
+  }
 }
+
+function restoreState() {
+  mode = lsGet("f91_mode") || "CLOCK";
+  try { const t = lsGet("f91_tmr"); if (t) Object.assign(timer, JSON.parse(t)); } catch { /* ignore */ }
+  try { const s = lsGet("f91_sw"); if (s) Object.assign(sw, JSON.parse(s)); } catch { /* ignore */ }
+  // a timer that already elapsed while all tabs were closed reads as finished
+  if (timer.running && timer.endsAt <= Date.now()) { timer.running = false; timer.remaining = 0; }
+}
+
 init();
 // safety: never leave the face hidden if init() is delayed or errors
 setTimeout(() => document.documentElement.classList.add("ready"), 500);
