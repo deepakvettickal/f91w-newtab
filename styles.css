@@ -216,7 +216,9 @@ html, body {
        --lite (0.1–1) is the brightness slider. ---- */
 .lcd-inner.lit .screen {
   background: linear-gradient(180deg, var(--grad-top), var(--grad-bottom));
-  /* keyed so default brightness (--lite 0.7) == the original 0.7em / 0.08em glow */
+  /* --lite (0.1–1) is the brightness slider; keyed so the default (0.7) is
+     an unchanged look. It dims/brightens the whole light AND its glow. */
+  filter: brightness(calc(0.3 + var(--lite, 0.7)));
   box-shadow: 0 0 calc(1em * var(--lite, 0.7)) calc(0.114em * var(--lite, 0.7)) var(--glow);
 }
 
