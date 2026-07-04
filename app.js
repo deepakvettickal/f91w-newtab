@@ -32,7 +32,7 @@ const el = {
 // Persistent settings. Extensions use chrome.storage.local (localStorage is
 // unreliable on new-tab pages); fall back to localStorage for the file:// preview.
 // A synchronous cache is filled once by loadStore() before first render.
-const STORE_KEYS = ["f91_top", "f91_bottom", "f91_ink", "f91_border", "f91_bright", "f91_24h", "f91_tip"];
+const STORE_KEYS = ["f91_top", "f91_bottom", "f91_ink", "f91_border", "f91_bright", "f91_24h", "f91_tip", "f91_lit"];
 const hasChromeStore = typeof chrome !== "undefined" && chrome.storage && chrome.storage.local;
 let storeCache = {};
 const lsGet = (k) => (k in storeCache ? storeCache[k] : null);
@@ -160,8 +160,12 @@ function adjust(delta) {
 }
 
 /* ---- button wiring ---- */
+function toggleLight() {
+  el.lcd.classList.toggle("lit");
+  lsSet("f91_lit", el.lcd.classList.contains("lit") ? "1" : "0");
+}
 el.lightBtn.addEventListener("click", () => {
-  if (mode === "CLOCK") el.lcd.classList.toggle("lit");
+  if (mode === "CLOCK") toggleLight();
   else resetCurrent();
   updateUI(); tick();
 });
@@ -177,7 +181,7 @@ el.altBtn.addEventListener("click", () => {
 /* ---- keyboard ---- */
 document.addEventListener("keydown", (e) => {
   const k = e.key;
-  if (k === "l" || k === "L") { el.lcd.classList.toggle("lit"); return; }
+  if (k === "l" || k === "L") { toggleLight(); return; }
   if (k === " ") { e.preventDefault(); if (mode === "CLOCK") toggleFormat(); else startStop(); updateUI(); tick(); return; }
   if (mode === "TIMER" && !timer.running) {
     if (k === "ArrowLeft") { field = (field + 3) % 4; updateUI(); e.preventDefault(); }
@@ -323,6 +327,7 @@ async function init() {
   theme.border = lsGet("f91_border") || THEME_DEFAULTS.border;
   brightness = parseInt(lsGet("f91_bright") || "70", 10);
   brightSlider.value = brightness;
+  if (lsGet("f91_lit") === "1") el.lcd.classList.add("lit");
 
   buildSwatches();
   applyTheme();
