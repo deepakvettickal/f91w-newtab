@@ -212,61 +212,90 @@ html, body {
   white-space: nowrap;
 }
 
-/* ---- backlight (LIGHT): themed gradient fill + circular outer glow ---- */
+/* ---- backlight (LIGHT): themed gradient fill + circular outer glow.
+       --lite (0.1–1) is the brightness slider. ---- */
 .lcd-inner.lit .screen {
   background: linear-gradient(180deg, var(--grad-top), var(--grad-bottom));
-  box-shadow: 0 0 0.7em 0.08em var(--glow);
+  box-shadow: 0 0 calc(0.7em * var(--lite, 0.7)) calc(0.09em * var(--lite, 0.7)) var(--glow);
+  filter: brightness(calc(0.4 + var(--lite, 0.7) * 0.9));
 }
 
-/* ---- WR style panel (neon theme picker) ---- */
+/* ---- inline colour-edit mode ---- */
 .wr-box { cursor: pointer; }
-.style-panel {
-  position: fixed;
-  left: 50%;
-  bottom: 4vh;
-  transform: translateX(-50%);
-  z-index: 20;
-  background: rgba(10, 10, 12, 0.96);
-  border: 2px solid var(--accent);
-  border-radius: 10px;
-  padding: 16px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  font-family: "Menlo", monospace;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+
+/* brightness slider — hidden until edit mode, sits beside LIGHT */
+.bright { display: none; }
+.lcd-inner.editing .bright {
+  display: inline-block;
+  font-size: 12px;          /* fixed base (not face-relative) */
+  width: 7em;
+  height: 3px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #5a6f8a;       /* fixed so it's visible under any theme */
+  border-radius: 2px;
+  cursor: pointer;
 }
-.style-panel[hidden] { display: none; }
-.sp-row { display: flex; align-items: center; gap: 12px; }
-.sp-label {
-  width: 68px;
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  color: var(--ink-dim);
-}
-.swatches { display: flex; gap: 7px; flex-wrap: wrap; }
-.sw {
-  width: 22px; height: 22px;
+.bright::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px; height: 12px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.25);
+  background: #e8e7e2;
+  border: 1px solid #5a6f8a;
+  cursor: pointer;
+}
+.lcd-inner.editing .chrono { visibility: hidden; }
+
+/* light-gradient pickers up top (edit mode) */
+.edit-top { display: none; }
+.lcd-inner.editing .edit-top {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  font-size: clamp(11px, 1.5vmin, 16px);
+  padding: 5px 0 1px;
+}
+
+/* edit bar replaces the WATER·WR·RESIST footer */
+.edit-bar { display: none; }
+.lcd-inner.editing .foot { display: none; }
+.lcd-inner.editing .edit-bar {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  font-size: clamp(11px, 1.5vmin, 16px);   /* fixed base for children */
+  padding: 6px 0 2px;
+}
+.eb-grid { display: flex; flex-direction: column; gap: 6px; }
+.eb-row { display: flex; align-items: center; gap: 10px; }
+.eb-label {
+  width: 5em;
+  font-size: 0.72em;
+  letter-spacing: 0.1em;
+  color: var(--ink-dim);
+  text-align: right;
+}
+.swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+.sw {
+  width: 1.15em; height: 1.15em;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.28);
   cursor: pointer;
   padding: 0;
   transition: transform 0.1s;
 }
-.sw:hover { transform: scale(1.15); }
-.sw.on { border-color: #fff; box-shadow: 0 0 8px currentColor; }
+.sw:hover { transform: scale(1.2); }
+.sw.on { border-color: #fff; box-shadow: 0 0 6px currentColor; }
 .sw.def { background: transparent; }   /* empty = default */
-.sp-close {
-  align-self: flex-end;
-  margin-top: 2px;
-  font-family: inherit;
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  color: var(--ink);
+.edit-x {
+  font-family: "Menlo", monospace;
+  font-size: 0.95em;
+  color: #e8e7e2;                        /* fixed so it never blends into the theme */
   background: transparent;
-  border: 1px solid var(--accent);
-  border-radius: 5px;
-  padding: 5px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 4px;
+  width: 2.2em; height: 2.2em;
   cursor: pointer;
+  align-self: flex-start;
 }
-.sp-close:hover { background: rgba(79, 139, 208, 0.18); }
+.edit-x:hover { background: rgba(255, 255, 255, 0.14); }

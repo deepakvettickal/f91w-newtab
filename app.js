@@ -163,16 +163,25 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-/* ===== neon theme picker (WR badge) ===== */
+/* ===== inline colour edit mode (WR badge) ===== */
+// gradient/digit palette: neons + black + grey
 const NEON = ["#39FF14", "#00FF9F", "#00FFFF", "#2E9BFF", "#4D5BFF", "#B026FF",
-              "#FF3DF2", "#FF2D95", "#FF3131", "#FF7A00", "#FFD400", "#FFFFFF"];
-// default gradient = the original subtle backlight; default ink = off-white
-const THEME_DEFAULTS = { top: "#2a2a26", bottom: "#050505", ink: "#e8e7e2" };
+              "#FF3DF2", "#FF2D95", "#FF3131", "#FF7A00", "#FFD400", "#FFFFFF",
+              "#808080", "#000000"];
+// border palette: muted line colors (no neon) + white / grey / black
+const BORDER = ["#4f8bd0", "#3fb6c8", "#5a6fd6", "#7f8a99", "#4fb07a", "#c06a6a",
+                "#c9a86a", "#FFFFFF", "#808080", "#000000"];
+const paletteFor = (t) => (t === "border" ? BORDER : NEON);
+
+// defaults: gradient = original subtle backlight, ink off-white, border blue
+const THEME_DEFAULTS = { top: "#2a2a26", bottom: "#050505", ink: "#e8e7e2", border: "#4f8bd0" };
 const theme = {
   top: localStorage.getItem("f91_top") || THEME_DEFAULTS.top,
   bottom: localStorage.getItem("f91_bottom") || THEME_DEFAULTS.bottom,
   ink: localStorage.getItem("f91_ink") || THEME_DEFAULTS.ink,
+  border: localStorage.getItem("f91_border") || THEME_DEFAULTS.border,
 };
+let brightness = parseInt(localStorage.getItem("f91_bright") || "70", 10);
 
 function hexToRgba(hex, a) {
   let h = hex.replace("#", "");
@@ -187,6 +196,8 @@ function applyTheme() {
   r.setProperty("--grad-bottom", theme.bottom);
   r.setProperty("--ink", theme.ink);
   r.setProperty("--ghost", hexToRgba(theme.ink, 0.1));
+  r.setProperty("--accent", theme.border);
+  r.setProperty("--lite", (brightness / 100).toFixed(2));
   // glow follows the top color; default keeps the original soft off-white glow
   const topDefault = theme.top.toLowerCase() === THEME_DEFAULTS.top.toLowerCase();
   r.setProperty("--glow", topDefault ? "rgba(232, 231, 226, 0.4)" : hexToRgba(theme.top, 0.6));
@@ -211,12 +222,15 @@ function pickColor(target, color) {
 function buildSwatches() {
   document.querySelectorAll(".swatches").forEach((box) => {
     const target = box.dataset.target;
-    const def = document.createElement("button");
-    def.className = "sw def";
-    def.title = "Default";
-    def.addEventListener("click", () => pickColor(target, THEME_DEFAULTS[target]));
-    box.append(def);
-    NEON.forEach((c) => {
+    // border has no "default" swatch — blue is simply one of the choices
+    if (target !== "border") {
+      const def = document.createElement("button");
+      def.className = "sw def";
+      def.title = "Default";
+      def.addEventListener("click", () => pickColor(target, THEME_DEFAULTS[target]));
+      box.append(def);
+    }
+    paletteFor(target).forEach((c) => {
       const b = document.createElement("button");
       b.className = "sw";
       b.style.background = c;
@@ -229,9 +243,17 @@ function buildSwatches() {
   });
 }
 
-const stylePanel = $("#stylePanel");
-$("#wrBox").addEventListener("click", () => { stylePanel.hidden = !stylePanel.hidden; });
-$("#spClose").addEventListener("click", () => { stylePanel.hidden = true; });
+$("#wrBox").addEventListener("click", () => el.lcd.classList.add("editing"));
+$("#editX").addEventListener("click", () => el.lcd.classList.remove("editing"));
+
+const brightSlider = $("#bright");
+brightSlider.value = brightness;
+brightSlider.addEventListener("input", () => {
+  brightness = parseInt(brightSlider.value, 10);
+  localStorage.setItem("f91_bright", String(brightness));
+  applyTheme();
+});
+
 buildSwatches();
 applyTheme();
 

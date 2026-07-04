@@ -19,7 +19,14 @@
       <!-- upper label row -->
       <div class="labelrow top">
         <span class="lbl action" id="lightBtn"><span class="arw">&#9664;</span> LIGHT/RESET</span>
+        <input type="range" class="bright" id="bright" min="10" max="100" value="70" title="Light brightness" />
         <span class="lbl chrono">ALARM CHRONOGRAPH</span>
+      </div>
+
+      <!-- light-gradient pickers (edit mode) — up top, near the LIGHT button -->
+      <div class="edit-top" id="editTop">
+        <div class="eb-row"><span class="eb-label">LIGHT &#9650;</span><div class="swatches" data-target="top"></div></div>
+        <div class="eb-row"><span class="eb-label">LIGHT &#9660;</span><div class="swatches" data-target="bottom"></div></div>
       </div>
 
       <!-- the LCD screen — every cell is a FIXED position; only lit values change -->
@@ -50,11 +57,20 @@
         <span class="lbl action" id="altBtn">START-STOP/24HR <span class="arw">&#9654;</span></span>
       </div>
 
-      <!-- footer -->
+      <!-- footer (normal mode) -->
       <div class="foot">
         <span class="lbl">WATER</span>
-        <span class="wr-box" id="wrBox" title="Theme"><span>W<span class="r">R</span></span></span>
+        <span class="wr-box" id="wrBox" title="Colour edit"><span>W<span class="r">R</span></span></span>
         <span class="lbl">RESIST</span>
+      </div>
+
+      <!-- colour edit bar (replaces footer in edit mode) -->
+      <div class="edit-bar" id="editBar">
+        <div class="eb-grid">
+          <div class="eb-row"><span class="eb-label">DIGITS</span><div class="swatches" data-target="ink"></div></div>
+          <div class="eb-row"><span class="eb-label">BORDER</span><div class="swatches" data-target="border"></div></div>
+        </div>
+        <button class="edit-x" id="editX" title="Done">&#10005;</button>
       </div>
 
       <!-- contextual hint (stopwatch / timer editing) -->
@@ -62,14 +78,6 @@
 
     </div>
   </main>
-
-  <!-- neon theme picker (opened by the WR badge) -->
-  <div class="style-panel" id="stylePanel" hidden>
-    <div class="sp-row"><span class="sp-label">TOP</span><div class="swatches" data-target="top"></div></div>
-    <div class="sp-row"><span class="sp-label">BOTTOM</span><div class="swatches" data-target="bottom"></div></div>
-    <div class="sp-row"><span class="sp-label">DIGITS</span><div class="swatches" data-target="ink"></div></div>
-    <button class="sp-close" id="spClose">CLOSE</button>
-  </div>
 
   <script src="app.js"></script>
 </body>
