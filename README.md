@@ -14,7 +14,7 @@
 </p>
 <p align="center">
   <img src="assets/gradient.png" alt="Pink to green gradient backlight" width="49%"/>
-  <img src="assets/fullpage.png" alt="Borderless full-page LCD" width="49%"/>
+  <img src="assets/borderless.png" alt="Borderless full-page LCD" width="49%"/>
 </p>
 
 ## Features
