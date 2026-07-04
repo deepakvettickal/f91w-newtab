@@ -1,7 +1,7 @@
 <h1 align="center">Chrome New Tab inspired by Casio F-91W</h1>
 
 <p align="center">
-  I wanted a cool clock as the new-tab page, and what better watchface than the iconic Casio F-91W. So I created this.
+  I wanted a cool watchface as the new-tab page, and what better watchface than the iconic Casio F-91W. So I created this chrome extension.
 </p>
 
 <p align="center">
