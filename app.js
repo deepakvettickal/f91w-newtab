@@ -173,9 +173,9 @@ document.addEventListener("keydown", (e) => {
 const NEON = ["#39FF14", "#00FF9F", "#00FFFF", "#2E9BFF", "#4D5BFF", "#B026FF",
               "#FF3DF2", "#FF2D95", "#FF3131", "#FF7A00", "#FFD400", "#FFFFFF",
               "#808080", "#000000"];
-// border palette: muted line colors (no neon) + white / grey / black
+// border palette: muted line colors (no neon) + white / grey / black + transparent
 const BORDER = ["#4f8bd0", "#3fb6c8", "#5a6fd6", "#7f8a99", "#4fb07a", "#c06a6a",
-                "#c9a86a", "#FFFFFF", "#808080", "#000000"];
+                "#c9a86a", "#FFFFFF", "#808080", "#000000", "transparent"];
 const paletteFor = (t) => (t === "border" ? BORDER : NEON);
 
 // defaults: gradient = original subtle backlight, ink off-white, border blue
@@ -246,10 +246,15 @@ function buildSwatches() {
     }
     paletteFor(target).forEach((c) => {
       const b = document.createElement("button");
-      b.className = "sw";
-      b.style.background = c;
-      b.style.color = c;
       b.dataset.color = c;
+      if (c === "transparent") {
+        b.className = "sw clear";      // "no border" — empty ring with a slash
+        b.title = "None (transparent)";
+      } else {
+        b.className = "sw";
+        b.style.background = c;
+        b.style.color = c;
+      }
       b.addEventListener("click", () => pickColor(target, c));
       box.append(b);
     });
@@ -257,8 +262,22 @@ function buildSwatches() {
   });
 }
 
+function resetTheme() {
+  theme.top = THEME_DEFAULTS.top;
+  theme.bottom = THEME_DEFAULTS.bottom;
+  theme.ink = THEME_DEFAULTS.ink;
+  theme.border = THEME_DEFAULTS.border;
+  brightness = 70;
+  ["top", "bottom", "ink", "border"].forEach((k) => lsSet("f91_" + k, theme[k]));
+  lsSet("f91_bright", "70");
+  brightSlider.value = 70;
+  applyTheme();
+  document.querySelectorAll(".swatches").forEach((box) => markSelected(box, box.dataset.target));
+}
+
 $("#wrBox").addEventListener("click", () => el.lcd.classList.add("editing"));
 $("#editX").addEventListener("click", () => el.lcd.classList.remove("editing"));
+$("#editReset").addEventListener("click", resetTheme);
 
 const brightSlider = $("#bright");
 brightSlider.value = brightness;

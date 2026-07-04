@@ -134,7 +134,7 @@ html, body {
   justify-self: start;
   font-size: 0.09em;
   letter-spacing: 0.05em;
-  color: var(--ink-dim);
+  color: var(--ink);          /* 24H / AM / PM takes the digit color */
   padding-bottom: 0.15em;
 }
 .weekday { grid-column: 2; justify-self: center; }
@@ -298,15 +298,24 @@ html, body {
 .sw:hover { transform: scale(1.2); }
 .sw.on { border-color: #fff; box-shadow: 0 0 6px currentColor; }
 .sw.def { background: transparent; }   /* empty = default */
-.edit-x {
+/* transparent / "no border" swatch — a diagonal slash over an empty ring */
+.sw.clear { background: transparent; position: relative; overflow: hidden; }
+.sw.clear::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(45deg, transparent 43%, rgba(255,255,255,0.65) 43% 57%, transparent 57%);
+}
+
+/* edit action buttons (RESET / ✕) — fixed colors, never blend into the theme */
+.eb-actions { display: flex; flex-direction: column; gap: 6px; align-self: flex-start; }
+.edit-x, .edit-reset {
   font-family: "Menlo", monospace;
-  font-size: 0.95em;
-  color: #e8e7e2;                        /* fixed so it never blends into the theme */
+  color: #e8e7e2;
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 4px;
-  width: 2.2em; height: 2.2em;
   cursor: pointer;
-  align-self: flex-start;
 }
-.edit-x:hover { background: rgba(255, 255, 255, 0.14); }
+.edit-x:hover, .edit-reset:hover { background: rgba(255, 255, 255, 0.14); }
+.edit-x { font-size: 0.95em; width: 2.2em; height: 2.2em; }
+.edit-reset { font-size: 0.7em; letter-spacing: 0.1em; padding: 0.45em 0.6em; }
