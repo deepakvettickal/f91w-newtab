@@ -1,8 +1,7 @@
-<h1 align="center">F-91W New Tab ⌚</h1>
+<h1 align="center">Chrome New Tab inspired by Casio F-91W</h1>
 
 <p align="center">
-  A faithful <b>Casio F-91W</b> LCD for your browser's new-tab page —<br/>
-  a live segmented clock, a stopwatch, a days-capable timer, and fully themeable neon backlights.
+  I wanted a cool clock as the new-tab page, and what better watchface than the iconic Casio F-91W. So I created this.
 </p>
 
 <p align="center">
@@ -17,10 +16,6 @@
   <img src="assets/gradient.png" alt="Pink to green gradient backlight" width="49%"/>
   <img src="assets/fullpage.png" alt="Borderless full-page LCD" width="49%"/>
 </p>
-
----
-
-I wanted a cool clock as the new-tab page, and what better watchface than the iconic Casio F-91W. So I created this.
 
 ## Features
 
