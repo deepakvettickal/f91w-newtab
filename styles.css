@@ -216,8 +216,8 @@ html, body {
        --lite (0.1–1) is the brightness slider. ---- */
 .lcd-inner.lit .screen {
   background: linear-gradient(180deg, var(--grad-top), var(--grad-bottom));
-  box-shadow: 0 0 calc(0.7em * var(--lite, 0.7)) calc(0.09em * var(--lite, 0.7)) var(--glow);
-  filter: brightness(calc(0.4 + var(--lite, 0.7) * 0.9));
+  /* keyed so default brightness (--lite 0.7) == the original 0.7em / 0.08em glow */
+  box-shadow: 0 0 calc(1em * var(--lite, 0.7)) calc(0.114em * var(--lite, 0.7)) var(--glow);
 }
 
 /* ---- inline colour-edit mode ---- */
@@ -250,14 +250,17 @@ html, body {
 }
 .lcd-inner.editing .chrono { visibility: hidden; }
 
-/* light-gradient pickers up top (edit mode) */
+/* light-gradient pickers up top (edit mode) — stacked 2 rows to match the
+   bottom edit bar's height, so entering edit mode adds equal height above and
+   below the screen (no shift). */
 .edit-top { display: none; }
 .lcd-inner.editing .edit-top {
   display: flex;
-  justify-content: center;
-  gap: 16px;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
   font-size: clamp(11px, 1.5vmin, 16px);
-  padding: 5px 0 1px;
+  padding: 6px 0 2px;
 }
 
 /* edit bar replaces the WATER·WR·RESIST footer.
