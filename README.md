@@ -5,15 +5,15 @@
 </p>
 
 <p align="center">
-  <img src="assets/default.png" alt="Default F-91W clock face" width="100%"/>
+  <img src="assets/hero.png" alt="Clean minimal full-page LCD" width="100%"/>
 </p>
 
 <p align="center">
-  <img src="assets/magenta.png" alt="Magenta digits" width="49%"/>
+  <img src="assets/default.png" alt="Default F-91W clock face" width="49%"/>
   <img src="assets/blue.png" alt="Blue backlight" width="49%"/>
 </p>
 <p align="center">
-  <img src="assets/pinkgreen.png" alt="Pink to green gradient backlight" width="49%"/>
+  <img src="assets/mono.png" alt="Clean monochrome mode" width="49%"/>
   <img src="assets/grey.png" alt="Borderless full-page LCD" width="49%"/>
 </p>
 
