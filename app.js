@@ -29,13 +29,32 @@ const el = {
   altBtn: $("#altBtn"),
 };
 
-// safe storage — never let a blocked localStorage (e.g. some file:// contexts)
-// throw and break the app. Persists normally when installed as an extension.
-const lsGet = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
-const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch { /* ignore */ } };
+// Persistent settings. Extensions use chrome.storage.local (localStorage is
+// unreliable on new-tab pages); fall back to localStorage for the file:// preview.
+// A synchronous cache is filled once by loadStore() before first render.
+const STORE_KEYS = ["f91_top", "f91_bottom", "f91_ink", "f91_border", "f91_bright", "f91_24h", "f91_tip"];
+const hasChromeStore = typeof chrome !== "undefined" && chrome.storage && chrome.storage.local;
+let storeCache = {};
+const lsGet = (k) => (k in storeCache ? storeCache[k] : null);
+function lsSet(k, v) {
+  storeCache[k] = v;
+  if (hasChromeStore) chrome.storage.local.set({ [k]: v });
+  else { try { localStorage.setItem(k, v); } catch { /* ignore */ } }
+}
+function loadStore() {
+  return new Promise((resolve) => {
+    if (hasChromeStore) {
+      chrome.storage.local.get(STORE_KEYS, (data) => { storeCache = data || {}; resolve(); });
+    } else {
+      try { STORE_KEYS.forEach((k) => { const v = localStorage.getItem(k); if (v != null) storeCache[k] = v; }); }
+      catch { /* ignore */ }
+      resolve();
+    }
+  });
+}
 
 let mode = "CLOCK";
-let use24 = lsGet("f91_24h") !== "0";
+let use24 = true;   // real value loaded in init()
 let field = 0; // timer edit field: 0 = minutes, 1 = seconds
 
 const sw = { running: false, elapsed: 0, startedAt: 0 };
@@ -180,13 +199,8 @@ const paletteFor = (t) => (t === "border" ? BORDER : NEON);
 
 // defaults: gradient = original subtle backlight, ink off-white, border blue
 const THEME_DEFAULTS = { top: "#2a2a26", bottom: "#050505", ink: "#e8e7e2", border: "#4f8bd0" };
-const theme = {
-  top: lsGet("f91_top") || THEME_DEFAULTS.top,
-  bottom: lsGet("f91_bottom") || THEME_DEFAULTS.bottom,
-  ink: lsGet("f91_ink") || THEME_DEFAULTS.ink,
-  border: lsGet("f91_border") || THEME_DEFAULTS.border,
-};
-let brightness = parseInt(lsGet("f91_bright") || "70", 10);
+const theme = { ...THEME_DEFAULTS };   // real values loaded in init()
+let brightness = 70;
 
 function toRgb(hex) {
   let h = hex.replace("#", "");
@@ -283,8 +297,15 @@ $("#wrBox").addEventListener("click", () => el.lcd.classList.add("editing"));
 $("#editX").addEventListener("click", () => el.lcd.classList.remove("editing"));
 $("#editReset").addEventListener("click", resetTheme);
 
-// one-time tip pointing at the WR colour editor
-if (!lsGet("f91_tip")) {
+const brightSlider = $("#bright");
+brightSlider.addEventListener("input", () => {
+  brightness = parseInt(brightSlider.value, 10);
+  lsSet("f91_bright", String(brightness));
+  applyTheme();
+});
+
+function showTipOnce() {
+  if (lsGet("f91_tip")) return;
   const tip = $("#wrTip");
   const dismissTip = () => { tip.classList.remove("show"); lsSet("f91_tip", "1"); };
   tip.classList.add("show");
@@ -292,18 +313,22 @@ if (!lsGet("f91_tip")) {
   $("#wrBox").addEventListener("click", dismissTip, { once: true });
 }
 
-const brightSlider = $("#bright");
-brightSlider.value = brightness;
-brightSlider.addEventListener("input", () => {
-  brightness = parseInt(brightSlider.value, 10);
-  lsSet("f91_bright", String(brightness));
+/* ---- boot: load saved settings first, then render ---- */
+async function init() {
+  await loadStore();
+  use24 = lsGet("f91_24h") !== "0";
+  theme.top = lsGet("f91_top") || THEME_DEFAULTS.top;
+  theme.bottom = lsGet("f91_bottom") || THEME_DEFAULTS.bottom;
+  theme.ink = lsGet("f91_ink") || THEME_DEFAULTS.ink;
+  theme.border = lsGet("f91_border") || THEME_DEFAULTS.border;
+  brightness = parseInt(lsGet("f91_bright") || "70", 10);
+  brightSlider.value = brightness;
+
+  buildSwatches();
   applyTheme();
-});
-
-buildSwatches();
-applyTheme();
-
-/* ---- boot ---- */
-updateUI();
-tick();
-setInterval(tick, 50);
+  showTipOnce();
+  updateUI();
+  tick();
+  setInterval(tick, 50);
+}
+init();

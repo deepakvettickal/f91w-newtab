@@ -33,7 +33,9 @@ assets — no build step, no dependencies, no backend.
   the selected cell blinks via the `.sel` class.
 - **Theming.** The WR badge toggles `.editing`. Colours are CSS custom properties
   (`--grad-top`, `--grad-bottom`, `--ink`, `--accent`, `--glow`, `--lite`) set from
-  `theme` in `app.js` and persisted in `localStorage` (via safe `lsGet`/`lsSet`).
+  `theme` in `app.js` and persisted via `chrome.storage.local` (the `storage`
+  permission), with a `localStorage` fallback for the `file://` preview. A
+  synchronous cache is filled by `loadStore()` before the first render.
   - The **LIGHT** gradient + circular glow only show when `.lit` is on.
   - A **transparent** border sets `.borderless`; combined with `.lit`, a `:has()`
     rule turns the whole viewport into the gradient (the screen box dissolves).

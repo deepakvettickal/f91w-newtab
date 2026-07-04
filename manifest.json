@@ -3,6 +3,7 @@
   "name": "F-91W New Tab",
   "version": "1.0.0",
   "description": "A Casio F-91W LCD new tab: clock, stopwatch, days+HH:MM:SS timer, and neon backlight themes.",
+  "permissions": ["storage"],
   "chrome_url_overrides": {
     "newtab": "index.html"
   },
