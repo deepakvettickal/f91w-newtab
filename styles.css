@@ -4,13 +4,13 @@
   font-family: "DSEG7";
   src: url("fonts/DSEG7Classic-Bold.woff2") format("woff2");
   font-weight: 700;
-  font-display: swap;
+  font-display: block;   /* avoid a flash of the fallback font on load */
 }
 @font-face {
   font-family: "DSEG14";
   src: url("fonts/DSEG14Classic-Bold.woff2") format("woff2");
   font-weight: 700;
-  font-display: swap;
+  font-display: block;   /* avoid a flash of the fallback font on load */
 }
 
 :root {
@@ -69,7 +69,7 @@ html, body {
 .brand {
   font-size: 0.2em;
   letter-spacing: 0.06em;
-  color: var(--ink);
+  color: #e8e7e2;          /* CASIO stays white regardless of digit theme */
 }
 .model {
   font-size: 0.13em;
@@ -166,8 +166,8 @@ html, body {
 .cell .ghost { color: var(--ghost); }                 /* in flow -> fixes cell width */
 .cell .win {
   position: absolute; inset: 0;
-  overflow: hidden;
   display: flex;
+  align-items: center;      /* keep the glyph vertically centered (no top clip) */
   justify-content: center;
 }
 .cell.right .win { justify-content: flex-end; }
@@ -223,25 +223,29 @@ html, body {
 /* ---- inline colour-edit mode ---- */
 .wr-box { cursor: pointer; }
 
-/* brightness slider — hidden until edit mode, sits beside LIGHT */
+/* LIGHT + brightness sit together on the left of the top row */
+.light-group { display: flex; align-items: center; gap: 0.6em; }
+
+/* brightness slider — minimal, hidden until edit mode, right beside LIGHT */
 .bright { display: none; }
 .lcd-inner.editing .bright {
   display: inline-block;
-  font-size: 12px;          /* fixed base (not face-relative) */
-  width: 7em;
-  height: 3px;
+  font-size: 11px;                  /* fixed base (not face-relative) */
+  width: 4.5em;
+  height: 2px;
   -webkit-appearance: none;
   appearance: none;
-  background: #5a6f8a;       /* fixed so it's visible under any theme */
+  background: rgba(232, 231, 226, 0.28);   /* subtle, always visible */
   border-radius: 2px;
   cursor: pointer;
+  vertical-align: middle;
 }
 .bright::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 12px; height: 12px;
+  width: 9px; height: 9px;
   border-radius: 50%;
   background: #e8e7e2;
-  border: 1px solid #5a6f8a;
+  box-shadow: 0 0 4px rgba(232, 231, 226, 0.6);
   cursor: pointer;
 }
 .lcd-inner.editing .chrono { visibility: hidden; }
@@ -256,9 +260,11 @@ html, body {
   padding: 5px 0 1px;
 }
 
-/* edit bar replaces the WATER·WR·RESIST footer */
+/* edit bar replaces the WATER·WR·RESIST footer.
+   Footer keeps its space (visibility, not display) so entering edit mode
+   adds equal height above (edit-top) and below (edit-bar) — no shift. */
 .edit-bar { display: none; }
-.lcd-inner.editing .foot { display: none; }
+.lcd-inner.editing .foot { visibility: hidden; }
 .lcd-inner.editing .edit-bar {
   display: flex;
   align-items: flex-start;

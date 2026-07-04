@@ -29,8 +29,13 @@ const el = {
   altBtn: $("#altBtn"),
 };
 
+// safe storage — never let a blocked localStorage (e.g. some file:// contexts)
+// throw and break the app. Persists normally when installed as an extension.
+const lsGet = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch { /* ignore */ } };
+
 let mode = "CLOCK";
-let use24 = localStorage.getItem("f91_24h") !== "0";
+let use24 = lsGet("f91_24h") !== "0";
 let field = 0; // timer edit field: 0 = minutes, 1 = seconds
 
 const sw = { running: false, elapsed: 0, startedAt: 0 };
@@ -97,7 +102,7 @@ function updateUI() {
 /* ---- actions ---- */
 function toggleFormat() {
   use24 = !use24;
-  localStorage.setItem("f91_24h", use24 ? "1" : "0");
+  lsSet("f91_24h", use24 ? "1" : "0");
 }
 
 function startStop() {
@@ -176,12 +181,12 @@ const paletteFor = (t) => (t === "border" ? BORDER : NEON);
 // defaults: gradient = original subtle backlight, ink off-white, border blue
 const THEME_DEFAULTS = { top: "#2a2a26", bottom: "#050505", ink: "#e8e7e2", border: "#4f8bd0" };
 const theme = {
-  top: localStorage.getItem("f91_top") || THEME_DEFAULTS.top,
-  bottom: localStorage.getItem("f91_bottom") || THEME_DEFAULTS.bottom,
-  ink: localStorage.getItem("f91_ink") || THEME_DEFAULTS.ink,
-  border: localStorage.getItem("f91_border") || THEME_DEFAULTS.border,
+  top: lsGet("f91_top") || THEME_DEFAULTS.top,
+  bottom: lsGet("f91_bottom") || THEME_DEFAULTS.bottom,
+  ink: lsGet("f91_ink") || THEME_DEFAULTS.ink,
+  border: lsGet("f91_border") || THEME_DEFAULTS.border,
 };
-let brightness = parseInt(localStorage.getItem("f91_bright") || "70", 10);
+let brightness = parseInt(lsGet("f91_bright") || "70", 10);
 
 function hexToRgba(hex, a) {
   let h = hex.replace("#", "");
@@ -214,7 +219,7 @@ function markSelected(box, target) {
 
 function pickColor(target, color) {
   theme[target] = color;
-  localStorage.setItem("f91_" + target, color);
+  lsSet("f91_" + target, color);
   applyTheme();
   markSelected(document.querySelector(`.swatches[data-target="${target}"]`), target);
 }
@@ -250,7 +255,7 @@ const brightSlider = $("#bright");
 brightSlider.value = brightness;
 brightSlider.addEventListener("input", () => {
   brightness = parseInt(brightSlider.value, 10);
-  localStorage.setItem("f91_bright", String(brightness));
+  lsSet("f91_bright", String(brightness));
   applyTheme();
 });
 
