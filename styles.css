@@ -329,32 +329,35 @@ html.ready .lcd { opacity: 1; }
 }
 .lcd-inner.editing .chrono { visibility: hidden; }
 
-/* light-gradient pickers up top (edit mode) — stacked 2 rows to match the
-   bottom edit bar's height, so entering edit mode adds equal height above and
-   below the screen (no shift). */
+/* light-gradient pickers up top (edit mode). Same fit-content block, centered,
+   as the bottom grid — so the top and bottom picker columns line up, and both
+   are 2 rows tall so entering edit mode adds equal height above/below (no shift). */
 .edit-top { display: none; }
 .lcd-inner.editing .edit-top {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
+  width: fit-content;
+  margin: 0 auto;
   font-size: clamp(11px, 1.5vmin, 16px);
   padding: 6px 0 2px;
 }
 
-/* edit bar replaces the WATER·WR·RESIST footer.
-   Footer keeps its space (visibility, not display) so entering edit mode
-   adds equal height above (edit-top) and below (edit-bar) — no shift. */
+/* edit bar replaces the WATER·WR·RESIST footer. Only the picker grid is in flow
+   (the action buttons are absolutely positioned to the side), so its height and
+   centering match the top pickers exactly. */
 .edit-bar { display: none; }
 .lcd-inner.editing .foot { visibility: hidden; }
 .lcd-inner.editing .edit-bar {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
+  display: block;
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
   font-size: clamp(11px, 1.5vmin, 16px);   /* fixed base for children */
   padding: 6px 0 2px;
 }
-.eb-grid { display: flex; flex-direction: column; gap: 6px; }
+.eb-grid { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
 .eb-row { display: flex; align-items: center; gap: 10px; }
 .eb-label {
   width: 5em;
@@ -363,7 +366,7 @@ html.ready .lcd { opacity: 1; }
   color: var(--ink-dim);
   text-align: right;
 }
-.swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+.swatches { display: flex; gap: 6px; flex-wrap: nowrap; }
 .sw {
   width: 1.15em; height: 1.15em;
   border-radius: 50%;
@@ -383,8 +386,18 @@ html.ready .lcd { opacity: 1; }
   background: linear-gradient(45deg, transparent 43%, rgba(255,255,255,0.65) 43% 57%, transparent 57%);
 }
 
-/* edit action buttons (RESET / ✕) — fixed colors, never blend into the theme */
-.eb-actions { display: flex; flex-direction: column; gap: 6px; align-self: flex-start; }
+/* edit action buttons (CLEAN / RESET / ✕) — out of flow, to the right of the grid
+   (so they don't add height or shift the picker columns), fixed colors. */
+.eb-actions {
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 .edit-x, .edit-reset {
   font-family: "Menlo", monospace;
   color: #e8e7e2;
