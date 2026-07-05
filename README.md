@@ -5,6 +5,12 @@
 </p>
 
 <p align="center">
+  <a href="https://chromewebstore.google.com/detail/f-91w-new-tab/ooeppkhfdocdaahjinlflfohpalmfaln">
+    <img src="https://img.shields.io/badge/Chrome%20Web%20Store-Install-4f8bd0?logo=googlechrome&logoColor=white&style=for-the-badge" alt="Install from the Chrome Web Store"/>
+  </a>
+</p>
+
+<p align="center">
   <img src="assets/hero.png" alt="Clean minimal full-page LCD" width="100%"/>
 </p>
 
@@ -47,7 +53,12 @@ The three watch buttons are context-sensitive:
 
 **Keyboard:** `←/→` pick a timer field · `↑/↓` adjust it · `Space` start-stop · `L` toggle light.
 
-## Install (Load unpacked)
+## Install
+
+**From the Chrome Web Store** (recommended):
+[**F-91W New Tab**](https://chromewebstore.google.com/detail/f-91w-new-tab/ooeppkhfdocdaahjinlflfohpalmfaln)
+
+**Or load unpacked** (for development):
 
 1. Clone or download this repo.
 2. Open `chrome://extensions` and enable **Developer mode** (top-right).
