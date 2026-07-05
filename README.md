@@ -16,7 +16,7 @@
 
 <p align="center">
   <img src="assets/default.png" alt="Default F-91W clock face" width="49%"/>
-  <img src="assets/blue.png" alt="Blue backlight" width="49%"/>
+  <img src="assets/lime.png" alt="Green gradient with yellow digits" width="49%"/>
 </p>
 <p align="center">
   <img src="assets/green.png" alt="Green digits, clean mode" width="49%"/>
