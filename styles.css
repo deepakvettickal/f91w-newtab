@@ -238,7 +238,8 @@ html.ready .lcd { opacity: 1; }
 
 /* ---- timer deadline input + display (fixed colors, theme-independent) ---- */
 .deadline-edit {
-  display: none;                 /* shown only while editing the timer */
+  display: flex;
+  visibility: hidden;            /* space reserved always; only shown while editing */
   justify-content: center;
   align-items: center;
   gap: 8px;

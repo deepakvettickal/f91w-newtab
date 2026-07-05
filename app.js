@@ -133,8 +133,8 @@ function updateUI() {
   el.hint.textContent = editing ? "◄ ► FIELD    ▲ ▼ SET" : "";
 
   // deadline input while editing the timer; deadline readout while it runs
-  if (editing) { el.deadlineEdit.style.display = "flex"; el.deadlineInput.min = localDatetimeMin(); }
-  else { el.deadlineEdit.style.display = "none"; }
+  if (editing) { el.deadlineEdit.style.visibility = "visible"; el.deadlineInput.min = localDatetimeMin(); }
+  else { el.deadlineEdit.style.visibility = "hidden"; }
   el.deadlineShow.textContent =
     (mode === "TIMER" && timer.running) ? "DEADLINE  " + fmtDeadline(timer.endsAt) : "";
 }
