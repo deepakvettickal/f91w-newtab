@@ -27,7 +27,13 @@ const el = {
   lightBtn: $("#lightBtn"),
   modeBtn: $("#modeBtn"),
   altBtn: $("#altBtn"),
+  deadlineEdit: $("#deadlineEdit"),
+  deadlineInput: $("#deadlineInput"),
+  deadlineStart: $("#deadlineStart"),
+  deadlineShow: $("#deadlineShow"),
 };
+const MON3 = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+const WD3 = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
 // Persistent settings. Extensions use chrome.storage.local (localStorage is
 // unreliable on new-tab pages); fall back to localStorage for the file:// preview.
@@ -63,6 +69,14 @@ const timer = { running: false, remaining: 5 * 60000, endsAt: 0, setMs: 5 * 6000
 /* ---- helpers (values only — ghosts are static in the HTML) ---- */
 const pad = (n) => String(n).padStart(2, "0");
 function setTime(a, b) { el.g1.textContent = pad(a); el.g2.textContent = pad(b); }
+const fmtDeadline = (ts) => {
+  const d = new Date(ts);
+  return `${WD3[d.getDay()]} ${d.getDate()} ${MON3[d.getMonth()]}  ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+const localDatetimeMin = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
 
 /* ---- the ticking display ---- */
 function tick() {
@@ -100,7 +114,8 @@ function tick() {
     const total = Math.ceil(r / 1000);  // round up until it truly hits 0
     const days = Math.floor(total / 86400);
     const rem = total % 86400;
-    el.weekday.textContent = days + "D";
+    // 2-char cell: "5D" for < 10 days, else the (capped) day count
+    el.weekday.textContent = days < 10 ? days + "D" : String(Math.min(days, 99));
     setTime(Math.floor(rem / 3600), Math.floor((rem % 3600) / 60));
     el.seconds.textContent = pad(rem % 60);
   }
@@ -116,6 +131,12 @@ function updateUI() {
   el.seconds.classList.toggle("sel", editing && field === 3);
 
   el.hint.textContent = editing ? "◄ ► FIELD    ▲ ▼ SET" : "";
+
+  // deadline input while editing the timer; deadline readout while it runs
+  if (editing) { el.deadlineEdit.style.display = "flex"; el.deadlineInput.min = localDatetimeMin(); }
+  else { el.deadlineEdit.style.display = "none"; }
+  el.deadlineShow.textContent =
+    (mode === "TIMER" && timer.running) ? "DEADLINE  " + fmtDeadline(timer.endsAt) : "";
 }
 
 /* ---- persist mode + stopwatch/timer state so they survive across new tabs.
@@ -187,6 +208,25 @@ el.modeBtn.addEventListener("click", () => {
 el.altBtn.addEventListener("click", () => {
   if (mode === "CLOCK") toggleFormat(); else startStop();
   updateUI(); tick();
+});
+
+// timer START: use the entered deadline date/time if given, else the field duration
+el.deadlineStart.addEventListener("click", () => {
+  if (mode !== "TIMER" || timer.running) return;
+  const now = Date.now();
+  const val = el.deadlineInput.value;
+  if (val) {
+    const t = new Date(val).getTime();
+    if (isNaN(t) || t <= now) return;            // ignore empty/past
+    timer.remaining = t - now; timer.setMs = timer.remaining; timer.endsAt = t;
+  } else {
+    if (timer.remaining <= 0) timer.remaining = timer.setMs;
+    if (timer.remaining <= 0) return;            // nothing set at all
+    timer.endsAt = now + timer.remaining;
+  }
+  timer.running = true;
+  el.deadlineInput.value = "";
+  saveTimer(); updateUI(); tick();
 });
 
 /* ---- keyboard ---- */

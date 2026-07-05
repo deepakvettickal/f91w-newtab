@@ -85,6 +85,15 @@
       <!-- contextual hint (stopwatch / timer editing) -->
       <div class="hint" id="hint"></div>
 
+      <!-- timer: optional explicit deadline date/time + start -->
+      <div class="deadline-edit" id="deadlineEdit">
+        <input type="datetime-local" id="deadlineInput" class="dl-input" />
+        <button id="deadlineStart" class="dl-btn">START</button>
+      </div>
+
+      <!-- the active deadline, shown after the hint -->
+      <div class="deadline-show" id="deadlineShow"></div>
+
     </div>
   </main>
 

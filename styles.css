@@ -236,6 +236,46 @@ html, body {
 /* reveal the face once settings are applied (see init() in app.js) */
 html.ready .lcd { opacity: 1; }
 
+/* ---- timer deadline input + display (fixed colors, theme-independent) ---- */
+.deadline-edit {
+  display: none;                 /* shown only while editing the timer */
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 7px;
+}
+.dl-input {
+  font-family: "Menlo", monospace;
+  font-size: 12px;
+  color: #e8e7e2;
+  background: #0b0b0b;
+  border: 1px solid #5a6f8a;
+  border-radius: 4px;
+  padding: 3px 6px;
+  color-scheme: dark;
+}
+.dl-btn {
+  font-family: "Menlo", monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: #e8e7e2;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 4px;
+  padding: 3px 12px;
+  cursor: pointer;
+}
+.dl-btn:hover { background: rgba(255, 255, 255, 0.14); }
+.deadline-show {
+  text-align: center;
+  font-family: "Menlo", monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: #c9a86a;
+  min-height: 1.3em;
+  margin-top: 5px;
+}
+
 /* ---- backlight (LIGHT): themed gradient fill + circular outer glow.
        --lite (0.1–1) is the brightness slider. ---- */
 .lcd-inner.lit .screen {
