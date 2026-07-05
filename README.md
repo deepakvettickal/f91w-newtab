@@ -21,12 +21,18 @@
 
 - **Clock** — segmented `HH:MM` + seconds, day-of-week and date, `24H` / `AM·PM`.
 - **Stopwatch** — `MM:SS` with live centiseconds; rolls up into hours and days.
-- **Timer** — set **days + HH:MM:SS**; edit each field with the arrow keys.
+- **Timer** — set a duration as **days + HH:MM:SS** with the arrow keys, or pick an
+  exact **deadline date & time** to count down to. The active deadline is shown at
+  the bottom, and because it's an absolute target it keeps running across new tabs
+  and even survives closing and reopening the browser.
 - **Neon themes** — click the **WR** badge to open in-place colour editing:
   - top & bottom of the **LIGHT** gradient, the **digit** colour, and the **border** colour
   - a **brightness** slider for the backlight
   - a **transparent border** that dissolves the whole page into one glowing LCD
-  - one-click **RESET**, and everything persists locally
+  - a **CLEAN** mode that hides the branding for a minimal face
+  - one-click **RESET**
+- **Everything persists** — theme, backlight, mode, and the running timer/stopwatch
+  are saved locally and synced live across open tabs.
 - **Fully responsive**, from a small window to fullscreen.
 
 ## Controls
